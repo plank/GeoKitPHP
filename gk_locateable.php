@@ -7,7 +7,9 @@ include_once('xml2array.php');
 /*
 *   GkLocatable
 *   ===========
-*   This is a class that tries to wrap location based API calls into an easy to use single point of entry.
+*   This is a class that tries to wrap location based API calls into an easy to use single point of entry. It's still
+*   quite rough around the edges and would benefit greatly from some refactoring. At this point, the geocode_ip method
+*   does not seem to work.
 *
 */
 class GkLocateable {
