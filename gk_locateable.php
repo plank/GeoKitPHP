@@ -314,55 +314,55 @@ class GkLocateable {
     
     // Deals with the geonames response - not working properly at the moment
     function parse_geonames_response($response) {
-		$array_data = xml2array($response);
-		$result['type'] = 'geonames';
-		if(empty($array_data['Geonames']['Code'][0])) {
-			return array('status'=>false);
-		}else{
-			if(!empty($array_data['Geonames']['Code'][0]['lat']) && !empty($array_data['Geonames']['Code'][0]['lng'])) {
-				$result['lat'] = $array_data['Geonames']['Code'][0]['lat'];
-				$result['lng'] = $array_data['Geonames']['Code'][0]['lng'];
-			}
-			if(!empty($array_data['Geonames']['Code'][0]['name'])) {
-				$result['city'] = $array_data['Geonames']['Code'][0]['name'];
-			}
-			if(!empty($array_data['Geonames']['Code'][0]['adminName1'])) {
-				$result['region'] = $array_data['Geonames']['Code'][0]['adminName1'];
-			}
-			if(!empty($array_data['Geonames']['Code'][0]['countryCode'])) {
-				$result['country'] = $array_data['Geonames']['Code'][0]['countryCode'];
-			}
-			$result['status'] = 'success';
-		}
-		return $result;
-	}
-	
-	// Handles the geocoder_ca response
-	function parse_geocoder_ca_response($response) {
-		$array_data = xml2array($response);
-		$result['type'] = 'geocoder_ca';
-		if(empty($array_data) || isset($array_data['Geodata']['Error'])) {
-			return array('status'=>'fail');
-		}else{
-			if(!empty($array_data['Geodata']['latt']) && !empty($array_data['Geodata']['longt'])) {
-				$result['lat'] = $array_data['geodata']['latt'];
-				$result['lng'] = $array_data['geodata']['longt'];
-			}else{
-				$result['lat'] = null;
-				$result['lng'] = null;
-			}
-			if(!empty($array_data['geodata']['standard']['city'])) {
-				// $result['city'] = ucwords(strtolower($array_data['Geodata']['Standard']['city']));
-				$result['city'] = ucwords(mb_strtolower($array_data['geodata']['standard']['city']));
-			}
-			if(!empty($array_data['Geodata']['standard']['prov'])) {
-				$result['region'] = ucfirst(mb_strtolower($array_data['geodata']['standard']['prov']));
-			}
-			$result['country'] = 'CA'; // It's geocoder_ca and will always be Canada
-			$result['status'] = 'success';
-		}
-		return $result;
-	}
-	
+        $array_data = xml2array($response);
+        $result['type'] = 'geonames';
+        if(empty($array_data['Geonames']['Code'][0])) {
+            return array('status'=>false);
+        }else{
+            if(!empty($array_data['Geonames']['Code'][0]['lat']) && !empty($array_data['Geonames']['Code'][0]['lng'])) {
+                $result['lat'] = $array_data['Geonames']['Code'][0]['lat'];
+                $result['lng'] = $array_data['Geonames']['Code'][0]['lng'];
+            }
+            if(!empty($array_data['Geonames']['Code'][0]['name'])) {
+                $result['city'] = $array_data['Geonames']['Code'][0]['name'];
+            }
+            if(!empty($array_data['Geonames']['Code'][0]['adminName1'])) {
+                $result['region'] = $array_data['Geonames']['Code'][0]['adminName1'];
+            }
+            if(!empty($array_data['Geonames']['Code'][0]['countryCode'])) {
+                $result['country'] = $array_data['Geonames']['Code'][0]['countryCode'];
+            }
+            $result['status'] = 'success';
+        }
+        return $result;
+    }
+    
+    
+    // Handles the geocoder_ca response
+    function parse_geocoder_ca_response($response) {
+        $array_data = xml2array($response);
+        $result['type'] = 'geocoder_ca';
+        if(empty($array_data) || isset($array_data['Geodata']['Error'])) {
+            return array('status'=>'fail');
+        }else{
+            if(!empty($array_data['Geodata']['latt']) && !empty($array_data['Geodata']['longt'])) {
+                $result['lat'] = $array_data['geodata']['latt'];
+                $result['lng'] = $array_data['geodata']['longt'];
+            }else{
+                $result['lat'] = null;
+                $result['lng'] = null;
+            }
+            if(!empty($array_data['geodata']['standard']['city'])) {
+                $result['city'] = ucwords(mb_strtolower($array_data['geodata']['standard']['city']));
+            }
+            if(!empty($array_data['Geodata']['standard']['prov'])) {
+                $result['region'] = ucfirst(mb_strtolower($array_data['geodata']['standard']['prov']));
+            }
+            $result['country'] = 'CA'; // It's geocoder_ca and will always be Canada
+            $result['status'] = 'success';
+        }
+        return $result;
+    }
+
 }
 ?>
