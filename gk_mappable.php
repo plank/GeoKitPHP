@@ -55,7 +55,9 @@ class GkMappable {
             'single_name' => 'record',
             'limit' => 50,
             'order' => '`distance` ASC',
-            'select' => array('*')
+            'select' => array('*'),
+            'where' => false,
+            'join' => false
         );
         // Allow settings to be overridden
         foreach($settings as $key=>$value) {
@@ -73,12 +75,20 @@ class GkMappable {
         return $this->findWithinQuery($lat,$lng,$distance,$options);
     }
     
-    function findWithinQuery($lat=null, $lng=null, $distance=10, $options=array()) {
+    
+    /*
+    *   function findWithinQuery($lat, $lng, $distance)
+    *   ===============================================
+    *   This is the meat and potatoes function that actually generates the SQL. It is also the part of this class
+    *   that probably requires the most bug fixing.
+    */
+    function findWithinQuery($lat=null, $lng=null, $distance=10) {
         
         if($lat==null || $lng==null) {
-            return array();
+            return false;
         }
         
+        // Shall we calculate the earth as a flat plane or sphere?
         if( $this->settings['calculate'] =='flat' ) {
             $distance_sql = $this->flat_distance_sql($lat,$lng);
         }else{
@@ -97,10 +107,27 @@ class GkMappable {
         
         // Add the FROM and AS sections
         $final_query .= " FROM `{$this->settings['table_name']}` \n";
-        $final_query .= " AS `{$this->settings['single_name']}` \n WHERE";
+        $final_query .= " AS `{$this->settings['single_name']}` \n";
+        
+        // Add in any joins
+        if($this->settings['join']) {
+            $join_string = $this->settings['join'];
+            preg_match('/\w+(?=\.)/', $join_string, $join_table);
+            $join_table = $join_table[0];
+            preg_match('/(?<=\.)\w+/', $join_string, $join_field);
+            $join_field = $join_field[0];
+            preg_match('/(?<=\.)\w+$/', $join_string, $join_to_field);
+            $join_to_field = $join_to_field[0];
+            $final_query .= "JOIN `$join_table` ON `{$this->settings['single_name']}`.`$join_to_field` = `$join_table`.`$join_field`";
+        }
         
         // Add our boundry conditions
-        $final_query .= $conditions;
+        $final_query .= "\n WHERE ".$conditions;
+        
+        // Add any extra conditions
+        if($this->settings['where']) {
+            $final_query .= " AND {$this->settings['where']}";
+        }
         
         // Add the order conditions
         $final_query .= " ORDER BY {$this->settings['order']} ";
