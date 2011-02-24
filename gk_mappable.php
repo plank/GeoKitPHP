@@ -40,7 +40,9 @@ class GkMappable {
     *           'single_name' => 'name_of_AS_item',
     *           'limit' => 50,
     *           'order' => '`distance` ASC',
-    *           'select' => array('field1', 'field2', 'etc')
+    *           'select' => array('field1', 'field2', 'etc'),
+    *           'where' => '`your_table`.`published` = true',
+    *           'join' => 'your_other_table.id = geo_table.foreign_id'
     *       );
     *
     */
