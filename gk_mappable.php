@@ -2,7 +2,7 @@
 /*
 *   GkMappable
 *   ==========
-*   Used to calculate distances between two points, specifically, between two pairs of longitude and latitude. GkMappable
+*   Used to calculate distances between two points, specifically, between two pairs of longitude and latitude points. GkMappable
 *   is used to help generate the complex MySQL queries that are needed when searching for records by distance.
 *
 */
@@ -37,7 +37,10 @@ class GkMappable {
     *   		'units' => 'kms',
     *   		'calculate' => 'flat',
     *   		'table_name' => 'name_of_table',
-    *           'single_name' => 'name_of_AS_item'
+    *           'single_name' => 'name_of_AS_item',
+    *           'limit' => 50,
+    *           'order' => '`distance` ASC',
+    *           'select' => array('field1', 'field2', 'etc')
     *   	);
 	*
 	*/
@@ -47,7 +50,7 @@ class GkMappable {
 			'lat_column_name' => 'lat',
 			'lng_column_name' => 'lng',
 			'units' => 'kms',
-			'calculate' => 'sphere',
+			'calculate' => 'flat',
 			'table_name' => 'map_table',
 			'single_name' => 'record',
 			'limit' => 50,
