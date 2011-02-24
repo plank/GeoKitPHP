@@ -49,7 +49,10 @@ class GkMappable {
 			'units' => 'kms',
 			'calculate' => 'flat',
 			'table_name' => 'map_table',
-			'single_name' => 'record'
+			'single_name' => 'record',
+			'limit' => 50,
+			'order' => '`distance` ASC',
+			'select' => array('*')
 		);
 		// Allow settings to be overridden
 		foreach($settings as $key=>$value) {
@@ -68,16 +71,10 @@ class GkMappable {
 	}
 	
 	function findWithinQuery($lat=null, $lng=null, $distance=10, $options=array()) {
+		
 		if($lat==null || $lng==null) {
 			return array();
 		}
-		
-		
-		$default_options = array(
-			'limit' => 15,
-			'order' => 'distance ASC'
-		);
-		$options = array_merge($default_options, $options);
 		
 		if( $this->settings['calculate'] =='flat' ) {
 			$distance_sql = $this->flat_distance_sql($lat,$lng);
@@ -85,16 +82,31 @@ class GkMappable {
 			$distance_sql = $this->sphere_distance_sql($lat,$lng);
 		}					
 		$conditions = $this->prepare_for_find($distance,$lat,$lng);
-		$options['fields'] = array('*',$distance_sql.' AS distance');
-		$options['conditions'][] = $conditions;
-		// return $options;
 		
-		$final_query = "SELECT *, ";
-		$final_query .= $options['fields'][1];
+		// Loop through the fields that we are selecting
+		$final_query = "SELECT ";
+		foreach($this->settings['select'] as $field) {
+		    $final_query .= " $field, ";
+		}
+		
+		// Add our heavy distance SQL code
+		$final_query .= "$distance_sql AS `distance`";
+		
+		// Add the FROM and AS sections
 		$final_query .= " FROM `{$this->settings['table_name']}` \n";
 		$final_query .= " AS `{$this->settings['single_name']}` \n WHERE";
-		$final_query .= $options['conditions'][0];
-		$final_query .= " ORDER BY `distance` ASC LIMIT 200";
+		
+		// Add our boundry conditions
+		$final_query .= $conditions;
+		
+		// Add the order conditions
+		$final_query .= " ORDER BY {$this->settings['order']} ";
+		
+		// Add a limit if required
+		if($this->settings['limit']) {
+		    $final_query .= "LIMIT {$this->settings['limit']}";
+		}
+		
 		return $final_query;
 	}
 	
