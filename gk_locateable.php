@@ -234,8 +234,8 @@ class GkLocateable {
         $short_array = $response_array['kml']['Response']['Placemark'];
         if(!empty($short_array['Point']['coordinates'])) {
             $latlng = explode(',',$short_array['Point']['coordinates']);
-            $result['lat'] = $latlng[0];
-            $result['lng'] = $latlng[1];
+            $result['lng'] = $latlng[0];
+            $result['lat'] = $latlng[1];
         }else{
              $result['lat'] = false;
              $result['lng'] = false;
