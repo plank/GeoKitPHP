@@ -47,7 +47,7 @@ class GkMappable {
 			'lat_column_name' => 'lat',
 			'lng_column_name' => 'lng',
 			'units' => 'kms',
-			'calculate' => 'flat',
+			'calculate' => 'sphere',
 			'table_name' => 'map_table',
 			'single_name' => 'record',
 			'limit' => 50,
@@ -114,7 +114,7 @@ class GkMappable {
 	function sphere_distance_sql($lat,$lng) {
 		$lat = $this->deg2rad($lat);
 		$lng = $this->deg2rad($lng);
-		$multiplier = $this->units_sphere_multiplier($Model);
+		$multiplier = $this->units_sphere_multiplier();
 		$qualified_lat_column_name = "`{$this->settings['single_name']}`.`{$this->settings['lat_column_name']}`";
 		$qualified_lng_column_name = "`{$this->settings['single_name']}`.`{$this->settings['lng_column_name']}`";
 		return "(ACOS(least(1,COS($lat)*COS($lng)*COS(RADIANS($qualified_lat_column_name))*COS(RADIANS($qualified_lng_column_name))+
