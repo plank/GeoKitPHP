@@ -26,7 +26,7 @@ class GkLocateable {
             'yahoo_api_key' => '',
             'google_api_key' => '',
             'order' => array(
-                'google','yahoo','geocoder_ca', // 'geonames' need to implement
+                'yahoo','google','geocoder_ca', // 'geonames' need to implement
             )
         );
         
@@ -189,9 +189,10 @@ class GkLocateable {
     function yahoo_request($location) {
         // TODO: Update to new API:
         //          http://where.yahooapis.com/geocode?q=1600+Pennsylvania+Avenue,+Washington,+DC&appid=
-        $url = 'http://local.yahooapis.com/MapsService/V1/geocode?appid=';
-        $url .= $this->settings['yahoo_api_key'];
-        $url .= '&location='.$location;
+        //$url = 'http://local.yahooapis.com/MapsService/V1/geocode?appid=';
+        $url = 'http://where.yahooapis.com/geocode?q=';
+        $url .= $location;
+        $url .= '&appid='.$this->settings['yahoo_api_key'];
         return $url;
     }
     
@@ -286,24 +287,24 @@ class GkLocateable {
         $result = array();
         $array_data = xml2array($response);
         $result['type'] = 'yahoo';
-        if(empty($array_data) || isset($array_data['Error'])) {
+        if(empty($array_data) || $array_data['ResultSet']['Error'] == 1) {
             return array('status'=>'fail');
         }else{
-            if(!empty($array_data['ResultSet']['Result']['Latitude']) && !empty($array_data['ResultSet']['Result']['Longitude'])) {
-                $result['lat'] = $array_data['ResultSet']['Result']['Latitude'];
-                $result['lng'] = $array_data['ResultSet']['Result']['Longitude'];
+            if(!empty($array_data['ResultSet']['Result']['latitude']) && !empty($array_data['ResultSet']['Result']['longitude'])) {
+                $result['lat'] = $array_data['ResultSet']['Result']['latitude'];
+                $result['lng'] = $array_data['ResultSet']['Result']['longitude'];
             }else{
                 $result['lat'] = null;
                 $result['lng'] = null;
             }
-            if(!empty($array_data['ResultSet']['Result']['City'])) {
-                $result['city'] = $array_data['ResultSet']['Result']['City'];
+            if(!empty($array_data['ResultSet']['Result']['city'])) {
+                $result['city'] = $array_data['ResultSet']['Result']['city'];
             }
             if(!empty($array_data['ResultSet']['Result']['State'])) {
-                $result['region'] = $array_data['ResultSet']['Result']['State'];
+                $result['region'] = $array_data['ResultSet']['Result']['state'];
             }
             if(!empty($array_data['ResultSet']['Result']['Country'])) {
-                $result['country'] = $array_data['ResultSet']['Result']['Country'];
+                $result['country'] = $array_data['ResultSet']['Result']['country'];
             }
             if(empty($result['lat']) || empty($result['lng'])) {
                 $result['status'] = 'fail';
